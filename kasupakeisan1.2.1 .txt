@@ -120,6 +120,7 @@
         <!-- スペースドアーマー系 -->
         <li><input type="checkbox" name="ownedParts" value="スペースドアーマー LV1" checked> スペースドアーマー LV1</li>
         <li><input type="checkbox" name="ownedParts" value="射撃強化プログラムLV1" checked> 射撃強化プログラムLV1</li>
+        
       </ul>
     </fieldset>
     
