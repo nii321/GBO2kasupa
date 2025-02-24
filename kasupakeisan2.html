@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>バトオペ耐久最適化ツール </title>
+  <style>
+    body { font-family: sans-serif; margin: 20px; }
+    fieldset { margin-bottom: 15px; }
+    label { display: block; margin-bottom: 5px; }
+    #result { border: 1px solid #ccc; padding: 10px; background-color: #f9f9f9; }
+    ul { list-style: none; padding: 0; }
+  </style>
+</head>
+<body>
+  <h1>バトオペ耐久指数最適化ツール</h1>
+  <form id="inputForm">
+    <fieldset>
+      <legend>基本情報</legend>
+      <label>機体レベル　:
+        <input type="number" id="machineLevel" value="1">
+      </label>
+      <label>機体HP　 　:
+        <input type="number" id="machineHP">
+      </label>
+      <label>耐実弾補正　:
+        <input type="number" id="defBullet">
+      </label>
+      <label>耐ビーム補正:
+        <input type="number" id="defBeam">
+      </label>
+      <label>耐格闘補正　:
+        <input type="number" id="defMelee">
+      </label>
+    </fieldset>
+  
+    <fieldset>
+      <legend>スロット数</legend>
+      <label>近距離スロット:
+        <input type="number" id="slotClose" value="10">
+      </label>
+      <label>中距離スロット:
+        <input type="number" id="slotMid" value="10">
+      </label>
+      <label>遠距離スロット:
+        <input type="number" id="slotFar" value="10">
+      <label>残りカスパ枠:
+        <input type="number" id="cpboundary" value="8">
+
+      </label>
+    </fieldset>
+  
+    <fieldset>
+      <legend>被攻撃割合 </legend>
+      <label>実弾　:
+        <input type="number" id="attackBullet" value="33">
+      </label>
+      <label>ビーム:
+        <input type="number" id="attackBeam" value="33">
+      </label>
+      <label>格闘　:
+        <input type="number" id="attackMelee" value="34">
+      </label>
+      <p>（各コスト目安）</p>
+      <div>
+        <input type="button" value="300" onclick="document.getElementById('attackBullet').value='50';document.getElementById('attackBeam').value='10';document.getElementById('attackMelee').value='40';">
+        <input type="button" value="350" onclick="document.getElementById('attackBullet').value='50';document.getElementById('attackBeam').value='10';document.getElementById('attackMelee').value='40';">
+        <input type="button" value="400" onclick="document.getElementById('attackBullet').value='40';document.getElementById('attackBeam').value='10';document.getElementById('attackMelee').value='50';">
+        <br>
+        <input type="button" value="450" onclick="document.getElementById('attackBullet').value='35';document.getElementById('attackBeam').value='25';document.getElementById('attackMelee').value='40';">
+        <input type="button" value="500" onclick="document.getElementById('attackBullet').value='30';document.getElementById('attackBeam').value='30';document.getElementById('attackMelee').value='40';">
+        <input type="button" value="550" onclick="document.getElementById('attackBullet').value='25';document.getElementById('attackBeam').value='40';document.getElementById('attackMelee').value='35';">
+        <br>
+        <input type="button" value="600" onclick="document.getElementById('attackBullet').value='20';document.getElementById('attackBeam').value='40';document.getElementById('attackMelee').value='40';">
+        <input type="button" value="650" onclick="document.getElementById('attackBullet').value='20';document.getElementById('attackBeam').value='50';document.getElementById('attackMelee').value='30';">
+        <input type="button" value="700" onclick="document.getElementById('attackBullet').value='20';document.getElementById('attackBeam').value='50';document.getElementById('attackMelee').value='30';">
+        <br>
+        <input type="button" value="750" onclick="document.getElementById('attackBullet').value='20';document.getElementById('attackBeam').value='50';document.getElementById('attackMelee').value='30';">
+        <input type="button" value="均等" onclick="document.getElementById('attackBullet').value='1';document.getElementById('attackBeam').value='1';document.getElementById('attackMelee').value='1';">
+      </div>
+    </fieldset>
+ <fieldset>
+  <legend>拡張スキル</legend>
+  <select id="extensionSkill">
+    <option value="none">なし</option>
+    <option value="bulletDef">耐実弾補正拡張Lv5</option>
+    <option value="beamDef">耐ビーム補正拡張Lv5</option>
+    <option value="meleeDef">耐格闘補正拡張Lv5</option>
+    <option value="hpBoost">カスタムパーツ拡張［HP］Lv5</option>
+    <option value="armorBoost">カスタムパーツ拡張［装甲］Lv5</option>
+  </select>
+</fieldset>
+   
+    <!-- 所持パーツのトグルボタン -->
+    <button type="button" id="toggleOwnedParts">所持カスタムパーツ (クリックで展開)</button>
+    
+    <!-- 所持カスタムパーツ欄はデフォルト非表示 -->
+    <fieldset id="ownedPartsFieldset" style="display:none;">
+      <legend>所持カスタムパーツ（使用可能なパーツにチェック）</legend>
+     <fieldset>
+      <legend>防御系 </legend>
+
+      <ul>
+        <!-- 強化フレーム系 -->
+        <li><input type="checkbox" name="ownedParts" value="強化フレーム LV1" checked> 強化フレーム LV1</li>
+        <li><input type="checkbox" name="ownedParts" value="強化フレーム LV2" checked> 強化フレーム LV2</li>
+        <li><input type="checkbox" name="ownedParts" value="強化フレーム LV3" checked> 強化フレーム LV3</li>
+        <li><input type="checkbox" name="ownedParts" value="強化フレーム LV4" checked> 強化フレーム LV4</li>
+        <li><input type="checkbox" name="ownedParts" value="強化フレーム LV5" checked> 強化フレーム LV5</li>
+        <!-- 新型フレーム系 -->
+        <li><input type="checkbox" name="ownedParts" value="新型フレーム LV1" checked> 新型フレーム LV1</li>
+        <li><input type="checkbox" name="ownedParts" value="新型フレーム LV2" checked> 新型フレーム LV2</li>
+        <li><input type="checkbox" name="ownedParts" value="新型フレーム LV3" checked> 新型フレーム LV3</li>
+        <li><input type="checkbox" name="ownedParts" value="新型フレーム LV4" checked> 新型フレーム LV4</li>
+        <!-- 耐実弾装甲系 -->
+        <li><input type="checkbox" name="ownedParts" value="耐実弾装甲 LV1" checked> 耐実弾装甲 LV1</li>
+        <li><input type="checkbox" name="ownedParts" value="耐実弾装甲 LV2" checked> 耐実弾装甲 LV2</li>
+        <li><input type="checkbox" name="ownedParts" value="耐実弾装甲 LV3" checked> 耐実弾装甲 LV3</li>
+        <li><input type="checkbox" name="ownedParts" value="耐実弾装甲 LV4" checked> 耐実弾装甲 LV4</li>
+        <li><input type="checkbox" name="ownedParts" value="耐実弾装甲 LV5" checked> 耐実弾装甲 LV5</li>
+        <!-- 耐ビーム装甲系 -->
+        <li><input type="checkbox" name="ownedParts" value="耐ビーム装甲 LV1" checked> 耐ビーム装甲 LV1</li>
+        <li><input type="checkbox" name="ownedParts" value="耐ビーム装甲 LV2" checked> 耐ビーム装甲 LV2</li>
+        <li><input type="checkbox" name="ownedParts" value="耐ビーム装甲 LV3" checked> 耐ビーム装甲 LV3</li>
+        <li><input type="checkbox" name="ownedParts" value="耐ビーム装甲 LV4" checked> 耐ビーム装甲 LV4</li>
+        <li><input type="checkbox" name="ownedParts" value="耐ビーム装甲 LV5" checked> 耐ビーム装甲 LV5</li>
+        <!-- 耐格闘装甲系 -->
+        <li><input type="checkbox" name="ownedParts" value="耐格闘装甲 LV1" checked> 耐格闘装甲 LV1</li>
+        <li><input type="checkbox" name="ownedParts" value="耐格闘装甲 LV2" checked> 耐格闘装甲 LV2</li>
+        <li><input type="checkbox" name="ownedParts" value="耐格闘装甲 LV3" checked> 耐格闘装甲 LV3</li>
+        <li><input type="checkbox" name="ownedParts" value="耐格闘装甲 LV4" checked> 耐格闘装甲 LV4</li>
+        <li><input type="checkbox" name="ownedParts" value="耐格闘装甲 LV5" checked> 耐格闘装甲 LV5</li>
+        <!-- スペースドフレーム系 -->
+        <li><input type="checkbox" name="ownedParts" value="スペースドフレーム LV1" checked> スペースドフレーム LV1</li>
+        <li><input type="checkbox" name="ownedParts" value="スペースドフレーム LV2" checked> スペースドフレーム LV2</li>
+        <li><input type="checkbox" name="ownedParts" value="スペースドフレーム LV3" checked> スペースドフレーム LV3</li>
+        <li><input type="checkbox" name="ownedParts" value="スペースドフレーム LV4" checked> スペースドフレーム LV4</li>
+        <!-- スペースドアーマー系 -->
+        <li><input type="checkbox" name="ownedParts" value="スペースドアーマー LV1" checked> スペースドアーマー LV1</li>
+        <li><input type="checkbox" name="ownedParts" value="複合装甲材［Type-A］LV1" checked> 複合装甲材［Type-A］LV1</li>
+        <li><input type="checkbox" name="ownedParts" value="複合装甲材［Type-B］LV1" checked> 複合装甲材［Type-B］LV1</li>
+        <li><input type="checkbox" name="ownedParts" value="複合装甲材［Type-C］LV1"checked> 複合装甲材［Type-C］LV1</li>
+        <li><input type="checkbox" name="ownedParts" value="特殊強化フレーム［Type-A］LV1"checked> 特殊強化フレーム［Type-A］LV1</li>
+        <li><input type="checkbox" name="ownedParts" value="特殊強化フレーム［Type-B］LV1"checked> 特殊強化フレーム［Type-B］LV1</li>
+        <li><input type="checkbox" name="ownedParts" value="オーバーチューン［フレーム］LV1"checked> オーバーチューン［フレーム］LV1</li>
+        <li><input type="checkbox" name="ownedParts" value="ヘビーアーマー LV1"checked> ヘビーアーマー LV1</li>
+        <li><input type="checkbox" name="ownedParts" value="新型耐実弾装甲 LV1"checked> 新型耐実弾装甲 LV1</li>
+        <li><input type="checkbox" name="ownedParts" value="新型耐ビーム装甲 LV1"checked> 新型耐ビーム装甲 LV1</li>
+        <li><input type="checkbox" name="ownedParts" value="新型耐格闘装甲 LV1"checked> 新型耐格闘装甲 LV1</li>
+　　</fieldset>
+     <fieldset>
+      <legend>攻撃系 </legend>
+
+<!-- 射撃強化プログラム系 -->
+　<li><input type="checkbox" name="ownedParts" value="射撃強化プログラムLV1" checked> 射撃強化プログラムLV1</li>
+<li><input type="checkbox" name="ownedParts" value="射撃強化プログラムLV2" checked> 射撃強化プログラムLV2</li>
+<li><input type="checkbox" name="ownedParts" value="射撃強化プログラムLV3" checked> 射撃強化プログラムLV3</li>
+<li><input type="checkbox" name="ownedParts" value="射撃強化プログラムLV4" checked> 射撃強化プログラムLV4</li>
+
+<!-- 格闘強化プログラム系 -->
+<li><input type="checkbox" name="ownedParts" value="格闘強化プログラムLV1" checked> 格闘強化プログラムLV1</li>
+<li><input type="checkbox" name="ownedParts" value="格闘強化プログラムLV2" checked> 格闘強化プログラムLV2</li>
+<li><input type="checkbox" name="ownedParts" value="格闘強化プログラムLV3" checked> 格闘強化プログラムLV3</li>
+<li><input type="checkbox" name="ownedParts" value="格闘強化プログラムLV4" checked> 格闘強化プログラムLV4</li>
+
+<!-- オーバーチューン系 -->
+<li><input type="checkbox" name="ownedParts" value="オーバーチューン［射撃］LV1" checked> オーバーチューン［射撃］LV1</li>
+<li><input type="checkbox" name="ownedParts" value="オーバーチューン［射撃］LV2" checked> オーバーチューン［射撃］LV2</li>
+<li><input type="checkbox" name="ownedParts" value="オーバーチューン［格闘］LV1" checked> オーバーチューン［格闘］LV1</li>
+<li><input type="checkbox" name="ownedParts" value="オーバーチューン［格闘］LV2" checked> オーバーチューン［格闘］LV2</li>
+
+
+<!-- その他 -->
+<li><input type="checkbox" name="ownedParts" value="イレギュラーDBLLV1" checked> イレギュラーDBLLV1</li>
+<li><input type="checkbox" name="ownedParts" value="特殊燃焼剤LV1" checked> 特殊燃焼剤LV1</li>
+<li><input type="checkbox" name="ownedParts" value="火器管制最適化システムLV1" checked> 火器管制最適化システムLV1</li>
+　　</fieldset>
+     
+　　<fieldset>
+      <legend>補助系 </legend>
+　　
+<!-- 冷却システム系 -->
+<li><input type="checkbox" name="ownedParts" value="冷却システム LV1" checked> 冷却システム LV1</li>
+<li><input type="checkbox" name="ownedParts" value="冷却システム LV2" checked> 冷却システム LV2</li>
+<li><input type="checkbox" name="ownedParts" value="冷却システム LV3" checked> 冷却システム LV3</li>
+<li><input type="checkbox" name="ownedParts" value="冷却システム LV4" checked> 冷却システム LV4</li>
+
+<!-- 強制冷却システム系 -->
+<li><input type="checkbox" name="ownedParts" value="強制冷却システム LV1" checked> 強制冷却システム LV1</li>
+<li><input type="checkbox" name="ownedParts" value="強制冷却システム LV2" checked> 強制冷却システム LV2</li>
+<li><input type="checkbox" name="ownedParts" value="強制冷却システム LV3" checked> 強制冷却システム LV3</li>
+<li><input type="checkbox" name="ownedParts" value="強制冷却システム LV4" checked> 強制冷却システム LV4</li>
+
+<!-- クイックローダー系 -->
+<li><input type="checkbox" name="ownedParts" value="クイックローダー LV1" checked> クイックローダー LV1</li>
+<li><input type="checkbox" name="ownedParts" value="クイックローダー LV2" checked> クイックローダー LV2</li>
+<li><input type="checkbox" name="ownedParts" value="クイックローダー LV3" checked> クイックローダー LV3</li>
+
+
+<!-- 補助ジェネレーター系 -->
+<li><input type="checkbox" name="ownedParts" value="補助ジェネレーター LV1" checked> 補助ジェネレーター LV1</li>
+<li><input type="checkbox" name="ownedParts" value="補助ジェネレーター LV2" checked> 補助ジェネレーター LV2</li>
+<li><input type="checkbox" name="ownedParts" value="補助ジェネレーター LV3" checked> 補助ジェネレーター LV3</li>
+<li><input type="checkbox" name="ownedParts" value="補助ジェネレーター LV4" checked> 補助ジェネレーター LV4</li>
+
+<!-- 高精度集束リング系 -->
+<li><input type="checkbox" name="ownedParts" value="高精度集束リング LV1" checked> 高精度集束リング LV1</li>
+<li><input type="checkbox" name="ownedParts" value="高精度集束リング LV2" checked> 高精度集束リング LV2</li>
+<li><input type="checkbox" name="ownedParts" value="高精度集束リング LV3" checked> 高精度集束リング LV3</li>
+
+<!-- AD-DCS系 -->
+<li><input type="checkbox" name="ownedParts" value="AD-DCS LV1" checked> AD-DCS LV1</li>
+<li><input type="checkbox" name="ownedParts" value="AD-DCS LV2" checked> AD-DCS LV2</li>
+
+<!-- フィールドモーター系 -->
+<li><input type="checkbox" name="ownedParts" value="フィールドモーター LV1" checked> フィールドモーター LV1</li>
+<li><input type="checkbox" name="ownedParts" value="フィールドモーター LV2" checked> フィールドモーター LV2</li>
+
+<!-- AD-ASL系 -->
+<li><input type="checkbox" name="ownedParts" value="AD-ASL LV1" checked> AD-ASL LV1</li>
+<li><input type="checkbox" name="ownedParts" value="AD-ASL LV2" checked> AD-ASL LV2</li>
+
+<!-- その他 -->
+<li><input type="checkbox" name="ownedParts" value="電子防護システム LV1" checked> 電子防護システム LV1</li>
+<li><input type="checkbox" name="ownedParts" value="大容量補給パック LV1" checked> 大容量補給パック LV1</li>
+　　</fieldset>
+
+      </ul>
+    </fieldset>
+
+
+    
+    <button type="button" onclick="calculate()">最適化計算実行</button>
+  </form>
+  
+  <!-- 結果表示エリア -->
+  <div id="result" style="margin-top:20px;"></div>
+  
+  <script>
+
+    // トグルボタンによる所持パーツ欄の展開／格納
+    document.getElementById("toggleOwnedParts").addEventListener("click", function(){
+      const fieldset = document.getElementById("ownedPartsFieldset");
+      if (fieldset.style.display === "none") {
+        fieldset.style.display = "block";
+        this.textContent = "所持カスタムパーツ (クリックで格納)";
+      } else {
+        fieldset.style.display = "none";
+        this.textContent = "所持カスタムパーツ (クリックで展開)";
+      }
+    });
+
+    /*
+      パーツ定義
+      ※ 以下は従来のパーツ定義に加え、HPの割合増加用のパーツを追加しています。
+         ・新規プロパティ hpPercent を追加（値は%単位）
+         ・特殊強化フレーム系は複数同時装備不可なので group プロパティを設定
+    */
+
+// パーツの効果計算用の関数を定義
+const effectCalculators = {
+  // 機体レベルに応じたHP計算
+  levelHP: (baseValue, perLevel, maxValue) => function(level) {
+    return Math.min(baseValue + perLevel * (level-1), maxValue);
+  },
+  
+  // 機体レベルに応じた防御力計算
+  levelDef: (baseValue, perLevel, maxValue) => function(level) {
+    return Math.min(baseValue + perLevel * (level-1), maxValue);
+  }
+};
+
+    const parts = [
+   
+      {name: "強化フレーム LV1", close:0, mid:0, far:1, hp:200, bullet:0, beam:0, melee:0},
+      {name: "強化フレーム LV2", close:0, mid:0, far:3, hp:500, bullet:0, beam:0, melee:0},
+      {name: "強化フレーム LV3", close:0, mid:1, far:3, hp:700, bullet:0, beam:0, melee:0},
+      {name: "強化フレーム LV4", close:1, mid:1, far:3, hp:1000, bullet:0, beam:0, melee:0},
+      {name: "強化フレーム LV5", close:2, mid:1, far:3, hp:1200, bullet:0, beam:0, melee:0},
+    
+      // 新型フレーム系
+      {name: "新型フレーム LV1", close:0, mid:5, far:0, hp:800, bullet:0, beam:0, melee:0},
+      {name: "新型フレーム LV2", close:5, mid:2, far:0, hp:1000, bullet:0, beam:0, melee:0},
+      {name: "新型フレーム LV3", close:1, mid:2, far:5, hp:1200, bullet:0, beam:0, melee:0},
+      {name: "新型フレーム LV4", close:2, mid:4, far:6, hp:2000, bullet:0, beam:0, melee:0},
+    
+      // 耐実弾装甲系
+      {name: "耐実弾装甲 LV1", close:0, mid:1, far:1, hp:0, bullet:3, beam:0, melee:0},
+      {name: "耐実弾装甲 LV2", close:0, mid:2, far:3, hp:0, bullet:6, beam:0, melee:0},
+      {name: "耐実弾装甲 LV3", close:0, mid:0, far:8, hp:0, bullet:10, beam:0, melee:0},
+      {name: "耐実弾装甲 LV4", close:0, mid:9, far:0, hp:0, bullet:15, beam:0, melee:0},
+      {name: "耐実弾装甲 LV5", close:0, mid:9, far:3, hp:0, bullet:20, beam:0, melee:0},
+    
+      // 耐ビーム装甲系
+      {name: "耐ビーム装甲 LV1", close:0, mid:1, far:1, hp:0, bullet:0, beam:3, melee:0},
+      {name: "耐ビーム装甲 LV2", close:0, mid:2, far:3, hp:0, bullet:0, beam:6, melee:0},
+      {name: "耐ビーム装甲 LV3", close:0, mid:0, far:8, hp:0, bullet:0, beam:10, melee:0},
+      {name: "耐ビーム装甲 LV4", close:0, mid:12, far:0, hp:0, bullet:0, beam:15, melee:0},
+      {name: "耐ビーム装甲 LV5", close:0, mid:12, far:4, hp:0, bullet:0, beam:20, melee:0},
+    
+      // 耐格闘装甲系
+      {name: "耐格闘装甲 LV1", close:1, mid:1, far:0, hp:0, bullet:0, beam:0, melee:3},
+      {name: "耐格闘装甲 LV2", close:3, mid:2, far:0, hp:0, bullet:0, beam:0, melee:6},
+      {name: "耐格闘装甲 LV3", close:0, mid:8, far:0, hp:0, bullet:0, beam:0, melee:10},
+      {name: "耐格闘装甲 LV4", close:12, mid:0, far:0, hp:0, bullet:0, beam:0, melee:15},
+      {name: "耐格闘装甲 LV5", close:12, mid:4, far:0, hp:0, bullet:0, beam:0, melee:20},
+    
+      // スペースドフレーム系
+      {name: "スペースドフレーム LV1", close:1, mid:3, far:1, hp:200, bullet:0, beam:0, melee:0, thruster: 3},
+      {name: "スペースドフレーム LV2", close:1, mid:1, far:4, hp:400, bullet:0, beam:0, melee:0, thruster: 5},
+      {name: "スペースドフレーム LV3", close:5, mid:1, far:1, hp:600, bullet:0, beam:0, melee:0, thruster: 7},
+      {name: "スペースドフレーム LV4", close:4, mid:0, far:4, hp:1000, bullet:0, beam:0, melee:0, thruster: 8},
+    
+      // スペースドアーマー系
+      {name: "スペースドアーマー LV1", close:4, mid:2, far:3, hp:0, bullet:4, beam:4, melee:4, thruster: 4},
+ 　　　{name: "複合装甲材［Type-A］LV1", close: 4, mid: 4, far: 5, hp: 0, bullet: 10, beam: 10, melee: 0, group: "複合装甲材"},
+  　　　{name: "複合装甲材［Type-B］LV1", close: 6, mid: 4, far: 4, hp: 0, bullet: 0, beam: 10, melee: 10, group: "複合装甲材"},
+ 　　 {name: "複合装甲材［Type-C］LV1", close: 5, mid: 4, far: 3, hp: 0, bullet: 10, beam: 0, melee: 10, group: "複合装甲材"},
+      
+      // 新規特殊強化フレーム系パーツ
+      {name: "特殊強化フレーム［Type-A］LV1", close: 3, mid: 7, far: 5, hpPercent: 5, bullet: 9, beam: 9, melee: 0, group: "特殊強化フレーム"},
+      {name: "特殊強化フレーム［Type-B］LV1", close: 11, mid: 1, far: 3, hpPercent: 5, bullet: 0, beam: 0, melee: 18, group: "特殊強化フレーム"},
+      {name: "オーバーチューン［フレーム］LV1",close: 3, mid: 4, far: 3,bullet: 0, beam: 0, melee: 0,getHP: effectCalculators.levelHP(300, 900, 3000)},
+      {name: "ヘビーアーマー LV1",close: 5, mid: 4, far: 3,getDefense: effectCalculators.levelDef(1, 3, 10)},
+      {name: "新型耐実弾装甲 LV1", close: 3, mid: 1, far: 5, bullet: 12, beam: 0, melee: 0, bulletDefLimit: 20, group: "新型装甲"},
+      {name: "新型耐ビーム装甲 LV1", close: 3, mid: 5, far: 9, bullet: 0, beam: 12, melee: 0, beamDefLimit: 20, group: "新型装甲"},
+      {name: "新型耐格闘装甲 LV1", close: 5, mid: 7, far: 3, bullet: 0, beam: 0, melee: 12, meleeDefLimit: 20,  group: "新型装甲"},
+// 射撃強化プログラム系
+{name: "射撃強化プログラムLV1", close: 0, mid: 0, far: 1, type: "attack"},
+{name: "射撃強化プログラムLV2", close: 0, mid: 0, far: 3, type: "attack"},
+{name: "射撃強化プログラムLV3", close: 0, mid: 0, far: 4, type: "attack"},
+{name: "射撃強化プログラムLV4", close: 0, mid: 2, far: 5, type: "attack"},
+
+// 格闘強化プログラム系
+{name: "格闘強化プログラムLV1", close: 1, mid: 0, far: 0, type: "attack"},
+{name: "格闘強化プログラムLV2", close: 3, mid: 0, far: 0, type: "attack"},
+{name: "格闘強化プログラムLV3", close: 4, mid: 0, far: 0, type: "attack"},
+{name: "格闘強化プログラムLV4", close: 4, mid: 1, far: 0, type: "attack"},
+
+// オーバーチューン系
+{name: "オーバーチューン［射撃］LV1", close: 3, mid: 4, far: 5, type: "attack"},
+{name: "オーバーチューン［射撃］LV2", close: 4, mid: 5, far: 3, type: "attack"},
+{name: "オーバーチューン［格闘］LV1", close: 5, mid: 3, far: 1, type: "attack"},
+{name: "オーバーチューン［格闘］LV2", close: 2, mid: 4, far: 3, type: "attack"},
+
+
+// その他
+{name: "イレギュラーDBLLV1", close: 0, mid: 1, far: 2, type: "attack"},
+{name: "特殊燃焼剤LV1", close: 0, mid: 2, far: 2, type: "attack"},
+{name: "火器管制最適化システムLV1", close: 3, mid: 1, far: 5, type: "attack"},
+// 補助系カスタムパーツの定義
+{name: "冷却システム LV1", close: 3, mid: 1, far: 0, type: "support"},
+{name: "冷却システム LV2", close: 6, mid: 2, far: 0, type: "support"},
+{name: "冷却システム LV3", close: 7, mid: 4, far: 0, type: "support"},
+{name: "冷却システム LV4", close: 10, mid: 5, far: 1, type: "support"},
+
+{name: "強制冷却システム LV1", close: 2, mid: 1, far: 0, type: "support"},
+{name: "強制冷却システム LV2", close: 5, mid: 3, far: 0, type: "support"},
+{name: "強制冷却システム LV3", close: 7, mid: 4, far: 1, type: "support"},
+{name: "強制冷却システム LV4", close: 10, mid: 5, far: 1, type: "support"},
+
+{name: "クイックローダー LV1", close: 0, mid: 0, far: 2, type: "support"},
+{name: "クイックローダー LV2", close: 1, mid: 4, far: 0, type: "support"},
+{name: "クイックローダー LV3", close: 1, mid: 7, far: 0, type: "support"},
+
+{name: "補助ジェネレーター LV1", close: 0, mid: 0, far: 2, type: "support"},
+{name: "補助ジェネレーター LV2", close: 1, mid: 4, far: 0, type: "support"},
+{name: "補助ジェネレーター LV3", close: 1, mid: 7, far: 0, type: "support"},
+{name: "補助ジェネレーター LV4", close: 2, mid: 10, far: 0, type: "support"},
+
+{name: "高精度集束リング LV1", close: 0, mid: 2, far: 0, type: "support"},
+{name: "高精度集束リング LV2", close: 0, mid: 3, far: 1, type: "support"},
+{name: "高精度集束リング LV3", close: 0, mid: 6, far: 0, type: "support"},
+
+{name: "AD-DCS LV1", close: 0, mid: 1, far: 0, type: "support"},
+{name: "AD-DCS LV2", close: 1, mid: 2, far: 0, type: "support"},
+
+{name: "フィールドモーター LV1", close: 0, mid: 1, far: 4, type: "support"},
+{name: "フィールドモーター LV2", close: 0, mid: 3, far: 7, type: "support"},
+
+{name: "AD-ASL LV1", close: 0, mid: 1, far: 4, type: "support"},
+{name: "AD-ASL LV2", close: 0, mid: 5, far: 7, type: "support"},
+
+{name: "電子防護システム LV1", close: 2, mid: 0, far: 0, type: "support"},
+
+{name: "大容量補給パック LV1", close: 1, mid: 9, far: 3, type: "support"}
+
+
+      ];
+    
+    // ユーザーが所持しているパーツのみを抽出（チェック欄がある場合）
+    function getCandidateParts() {
+      const ownedValues = Array.from(document.querySelectorAll("input[name='ownedParts']:checked"))
+                                .map(chk => chk.value);
+      return parts.filter(part => ownedValues.includes(part.name));
+    }
+    
+    let bestCombination = null;
+    let maxDurability = 0;
+    
+ function calculate() {
+  const machineLevel = parseInt(document.getElementById('machineLevel').value, 10);
+  const baseHP = parseInt(document.getElementById('machineHP').value, 10);
+  const baseBullet = parseInt(document.getElementById('defBullet').value, 10);
+  const baseBeam = parseInt(document.getElementById('defBeam').value, 10);
+  const baseMelee = parseInt(document.getElementById('defMelee').value, 10);
+  const cpboundary = parseInt(document.getElementById('cpboundary').value, 10);
+  const extensionSkill = document.getElementById('extensionSkill').value;
+
+  const slots = {
+    close: parseInt(document.getElementById('slotClose').value, 10),
+    mid: parseInt(document.getElementById('slotMid').value, 10),
+    far: parseInt(document.getElementById('slotFar').value, 10)
+  };
+
+  // 拡張スキルに応じて候補パーツを絞り込む
+  let candidateParts = getCandidateParts();
+
+   if (extensionSkill !== 'hpBoost' && extensionSkill !== 'armorBoost') {
+    // 拡張スキルが選ばれていない場合、攻撃系と補助系を除外
+    candidateParts = candidateParts.filter(part => !part.type || (part.type !== 'attack' && part.type !== 'support'));
+  } else if (extensionSkill === 'hpBoost') {
+    // HP拡張の場合、攻撃系のみ含める
+    candidateParts = candidateParts.filter(part => !part.type || part.type === 'attack');
+  } else if (extensionSkill === 'armorBoost') {
+    // 装甲拡張の場合、補助系のみ含める
+    candidateParts = candidateParts.filter(part => !part.type || part.type === 'support');
+  }
+   
+      
+      bestCombination = null;
+      maxDurability = 0;
+      
+      // 初期値：絶対HPには基礎HPを、hp割合ボーナスは0から開始する
+      backtrack(candidateParts, [], 0, slots.close, slots.mid, slots.far,
+            baseHP, baseBullet, baseBeam, baseMelee, 0, machineLevel, cpboundary);
+      
+      showResult();
+    }
+    
+    /*
+      バックトラック探索関数
+      ※ 新たに currentHPPercent パラメータを追加し、
+         選択したパーツの hpPercent を累積。
+         終点では effectiveHP = currentAbsHP * (1 + currentHPPercent/100) として耐久指数を計算。
+    */
+function backtrack(candidateParts, currentParts, index, remainingClose, remainingMid, remainingFar,
+                   currentAbsHP, currentBulletDef, currentBeamDef, currentMeleeDef, currentHPPercent, 
+                   machineLevel, cpboundary) {
+  if (currentParts.length === cpboundary || index === candidateParts.length) {
+    // 拡張スキルの効果を計算
+    const extensionSkill = document.getElementById('extensionSkill').value;
+    let extraHP = 0;
+    let extraBulletDef = 0;
+    let extraBeamDef = 0;
+    let extraMeleeDef = 0;
+    
+    // 基本の上限値
+    let bulletLimit = 50;
+    let beamLimit = 50;
+    let meleeLimit = 50;
+
+// 装備パーツによる上限値の増加を計算
+currentParts.forEach(part => {
+  bulletLimit += (part.bulletDefLimit || 0);
+  beamLimit += (part.beamDefLimit || 0);
+  meleeLimit += (part.meleeDefLimit || 0);
+});
+
+
+    // 拡張スキルによる補正
+    switch(extensionSkill) {
+ case 'bulletDef':
+    bulletLimit += 10;
+    extraBulletDef = 10;
+    break;
+  case 'beamDef':
+    beamLimit += 10;
+    extraBeamDef = 10;
+    break;
+  case 'meleeDef':
+    meleeLimit += 10;
+    extraMeleeDef = 10;
+    break;
+      case 'hpBoost':
+        // 攻撃タイプのパーツ数をカウント
+        extraHP = currentParts.filter(p => p.type === 'attack').length * 400;
+        break;
+      case 'armorBoost':
+        // 補助タイプのパーツ数をカウント
+        const supportCount = currentParts.filter(p => p.type === 'support').length;
+        extraBulletDef = supportCount * 3;
+        extraBeamDef = supportCount * 3;
+        extraMeleeDef = supportCount * 3;
+        break;
+    }
+
+    // 最終的な値を計算
+    let effectiveHP = (currentAbsHP + extraHP) * (1 + currentHPPercent / 100);
+    let finalBulletDef = Math.min(currentBulletDef + extraBulletDef, bulletLimit);
+    let finalBeamDef = Math.min(currentBeamDef + extraBeamDef, beamLimit);
+    let finalMeleeDef = Math.min(currentMeleeDef + extraMeleeDef, meleeLimit);
+
+    // 耐久指数計算
+    let durability = calculateDurability(effectiveHP, finalBulletDef, finalBeamDef, finalMeleeDef, 
+                                       bulletLimit, beamLimit, meleeLimit);
+
+    if (durability > maxDurability) {
+      maxDurability = durability;
+      bestCombination = {
+        partsUsed: currentParts.slice(),
+        finalStats: {
+          hp: effectiveHP,
+          bulletDef: finalBulletDef,
+          beamDef: finalBeamDef,
+          meleeDef: finalMeleeDef
+        }
+      };
+    }
+    return;
+  }
+      
+      // 「採用しない」パターン
+      backtrack(candidateParts, currentParts, index+1, remainingClose, remainingMid, remainingFar,
+                currentAbsHP, currentBulletDef, currentBeamDef, currentMeleeDef, currentHPPercent, machineLevel, cpboundary);
+      
+      let part = candidateParts[index];
+      // groupプロパティがある場合、既に同一グループのパーツが選ばれていればこのパーツは採用不可
+      if (part.group && currentParts.some(selected => selected.group === part.group)) {
+        return;
+      }
+      
+      if (remainingClose >= part.close && remainingMid >= part.mid && remainingFar >= part.far) {
+        // パーツが持つ絶対HP増加は part.hp（無ければ0）、割合ボーナスは part.hpPercent（無ければ0）として加算
+
+  // HP計算
+  let addAbsHP = part.getHP ? part.getHP(machineLevel) : (part.hp || 0);
+  
+  // 防御力計算
+  let addDef = part.getDefense ? part.getDefense(machineLevel) : 0;
+  let addBullet = addDef || part.bullet || 0;
+  let addBeam = addDef || part.beam || 0;
+  let addMelee = addDef || part.melee || 0;
+
+
+        let addHPPercent = part.hpPercent || 0;
+        backtrack(candidateParts, currentParts.concat(part),
+                  index+1,
+                  remainingClose - part.close,
+                  remainingMid - part.mid,
+                  remainingFar - part.far,
+                  currentAbsHP + addAbsHP,
+                  currentBulletDef + addBullet,
+                  currentBeamDef + addBeam,
+                  currentMeleeDef + addMelee,
+                  currentHPPercent + addHPPercent,
+                  machineLevel, cpboundary);
+      }
+    }
+    
+    // 耐久指数を計算する関数
+    function calculateDurability(hp, bulletDef, beamDef, meleeDef, bulletLimit, beamLimit, meleeLimit) {
+      const ratioBullet = parseFloat(document.getElementById("attackBullet").value) / 100;
+      const ratioBeam   = parseFloat(document.getElementById("attackBeam").value) / 100;
+      const ratioMelee  = parseFloat(document.getElementById("attackMelee").value) / 100;
+      const totalAttack = ratioBullet + ratioBeam + ratioMelee;
+      const wari = 1 / totalAttack;
+      
+      const effectiveBullet = Math.min(bulletDef, bulletLimit);
+      const effectiveBeam   = Math.min(beamDef, beamLimit);
+      const effectiveMelee  = Math.min(meleeDef, meleeLimit);
+      
+      const denominator =
+         ratioBullet * wari * (1 - effectiveBullet / 100) +
+         ratioBeam * wari * (1 - effectiveBeam / 100) +
+         ratioMelee * wari * (1 - effectiveMelee / 100);
+      
+      return hp / denominator;
+    }
+    
+    function showResult() {
+      const resultDiv = document.getElementById('result');
+      if (!bestCombination) {
+        resultDiv.innerHTML = "<p>最適なカスタムパーツ構成が見つかりませんでした。</p>";
+        return;
+      }
+   const extensionSelect = document.getElementById('extensionSkill');
+  const selectedSkillName = extensionSelect.options[extensionSelect.selectedIndex].text;
+     
+      let html = "<h2>最硬なカスタムパーツ構成</h2>";
+      html += "<ul>";
+      bestCombination.partsUsed.forEach(function(part) {
+        html += "<li>" + part.name + "</li>";
+      });
+      html += "</ul>";
+      html += "<p>最終機体HP: " + bestCombination.finalStats.hp.toFixed(0) + "</p>";
+      html += "<p>耐実弾補正　: " + bestCombination.finalStats.bulletDef + " </p>";
+      html += "<p>耐ビーム補正: " + bestCombination.finalStats.beamDef + " </p>";
+      html += "<p>耐格闘補正　: " + bestCombination.finalStats.meleeDef + " </p>";
+　　  html += "<p>拡張スキル: " + selectedSkillName + "</p>";
+      html += "<p>耐久指数: " + maxDurability.toFixed(2) + "</p>";
+
+      resultDiv.innerHTML = html;
+    }
+// 各入力フィールドにキーイベントリスナーを追加
+const inputFields = [
+  'machineLevel',
+  'machineHP',
+  'defBullet',
+  'defBeam',
+  'defMelee',
+  'slotClose',
+  'slotMid',
+  'slotFar',
+  'cpboundary',
+  'attackBullet',
+  'attackBeam',
+  'attackMelee'
+];
+
+inputFields.forEach((fieldId, index) => {
+  document.getElementById(fieldId).addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+      e.preventDefault(); // デフォルトのEnterキーの動作を防止
+      // 次の入力フィールドが存在する場合、フォーカスを移動
+      if (index < inputFields.length - 1) {
+        document.getElementById(inputFields[index + 1]).focus();
+      }
+    }
+  });
+});
+
+  </script>
+</body>
+</html>
