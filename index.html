@@ -2,6 +2,7 @@
 <html>
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>バトオペ耐久最適化ツール </title>
   <style>
     body { font-family: sans-serif; margin: 20px; }
@@ -9,6 +10,42 @@
     label { display: block; margin-bottom: 5px; }
     #result { border: 1px solid #ccc; padding: 10px; background-color: #f9f9f9; }
     ul { list-style: none; padding: 0; }
+    /* メディアクエリの追加 */
+@media screen and (max-width: 768px) {
+  body {margin: 10px;font-size: 14px;}
+  
+  fieldset {
+    margin-bottom: 10px;
+    padding: 10px;
+  }
+  
+  input[type="number"] {
+    width: 100%;
+    height: 44px; /* タップしやすいサイズに */
+    margin-bottom: 10px;
+  }
+  
+  button {
+    min-height: 44px;
+    width: 100%;
+    margin: 5px 0;
+  }
+}
+
+/* 基本スタイルの改善 */
+body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+fieldset {
+  border-radius: 8px;
+}
+
+#result {
+  word-break: break-word;
+}
+
   </style>
 </head>
 <body>
