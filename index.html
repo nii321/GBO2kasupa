@@ -219,25 +219,21 @@ fieldset {
 <li><input type="checkbox" name="ownedParts" value="冷却システム LV1" checked> 冷却システム LV1</li>
 <li><input type="checkbox" name="ownedParts" value="冷却システム LV2" checked> 冷却システム LV2</li>
 <li><input type="checkbox" name="ownedParts" value="冷却システム LV3" checked> 冷却システム LV3</li>
-<li><input type="checkbox" name="ownedParts" value="冷却システム LV4" checked> 冷却システム LV4</li>
 
 <!-- 強制冷却システム系 -->
 <li><input type="checkbox" name="ownedParts" value="強制冷却システム LV1" checked> 強制冷却システム LV1</li>
 <li><input type="checkbox" name="ownedParts" value="強制冷却システム LV2" checked> 強制冷却システム LV2</li>
 <li><input type="checkbox" name="ownedParts" value="強制冷却システム LV3" checked> 強制冷却システム LV3</li>
-<li><input type="checkbox" name="ownedParts" value="強制冷却システム LV4" checked> 強制冷却システム LV4</li>
 
 <!-- クイックローダー系 -->
 <li><input type="checkbox" name="ownedParts" value="クイックローダー LV1" checked> クイックローダー LV1</li>
 <li><input type="checkbox" name="ownedParts" value="クイックローダー LV2" checked> クイックローダー LV2</li>
 <li><input type="checkbox" name="ownedParts" value="クイックローダー LV3" checked> クイックローダー LV3</li>
 
-
 <!-- 補助ジェネレーター系 -->
 <li><input type="checkbox" name="ownedParts" value="補助ジェネレーター LV1" checked> 補助ジェネレーター LV1</li>
 <li><input type="checkbox" name="ownedParts" value="補助ジェネレーター LV2" checked> 補助ジェネレーター LV2</li>
 <li><input type="checkbox" name="ownedParts" value="補助ジェネレーター LV3" checked> 補助ジェネレーター LV3</li>
-<li><input type="checkbox" name="ownedParts" value="補助ジェネレーター LV4" checked> 補助ジェネレーター LV4</li>
 
 <!-- 高精度集束リング系 -->
 <li><input type="checkbox" name="ownedParts" value="高精度集束リング LV1" checked> 高精度集束リング LV1</li>
@@ -258,7 +254,6 @@ fieldset {
 
 <!-- その他 -->
 <li><input type="checkbox" name="ownedParts" value="電子防護システム LV1" checked> 電子防護システム LV1</li>
-<li><input type="checkbox" name="ownedParts" value="大容量補給パック LV1" checked> 大容量補給パック LV1</li>
 　　</fieldset>
 
       </ul>
@@ -388,12 +383,10 @@ const effectCalculators = {
 {name: "冷却システム LV1", close: 3, mid: 1, far: 0, type: "support"},
 {name: "冷却システム LV2", close: 6, mid: 2, far: 0, type: "support"},
 {name: "冷却システム LV3", close: 7, mid: 4, far: 0, type: "support"},
-{name: "冷却システム LV4", close: 10, mid: 5, far: 1, type: "support"},
 
 {name: "強制冷却システム LV1", close: 2, mid: 1, far: 0, type: "support"},
 {name: "強制冷却システム LV2", close: 5, mid: 3, far: 0, type: "support"},
 {name: "強制冷却システム LV3", close: 7, mid: 4, far: 1, type: "support"},
-{name: "強制冷却システム LV4", close: 10, mid: 5, far: 1, type: "support"},
 
 {name: "クイックローダー LV1", close: 0, mid: 0, far: 2, type: "support"},
 {name: "クイックローダー LV2", close: 1, mid: 4, far: 0, type: "support"},
@@ -402,7 +395,6 @@ const effectCalculators = {
 {name: "補助ジェネレーター LV1", close: 0, mid: 0, far: 2, type: "support"},
 {name: "補助ジェネレーター LV2", close: 1, mid: 4, far: 0, type: "support"},
 {name: "補助ジェネレーター LV3", close: 1, mid: 7, far: 0, type: "support"},
-{name: "補助ジェネレーター LV4", close: 2, mid: 10, far: 0, type: "support"},
 
 {name: "高精度集束リング LV1", close: 0, mid: 2, far: 0, type: "support"},
 {name: "高精度集束リング LV2", close: 0, mid: 3, far: 1, type: "support"},
@@ -419,7 +411,6 @@ const effectCalculators = {
 
 {name: "電子防護システム LV1", close: 2, mid: 0, far: 0, type: "support"},
 
-{name: "大容量補給パック LV1", close: 1, mid: 9, far: 3, type: "support"}
 
 
       ];
