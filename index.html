@@ -199,17 +199,9 @@ fieldset {
 <li><input type="checkbox" name="ownedParts" value="格闘強化プログラムLV3" checked> 格闘強化プログラムLV3</li>
 <li><input type="checkbox" name="ownedParts" value="格闘強化プログラムLV4" checked> 格闘強化プログラムLV4</li>
 
-<!-- オーバーチューン系 -->
-<li><input type="checkbox" name="ownedParts" value="オーバーチューン［射撃］LV1" checked> オーバーチューン［射撃］LV1</li>
-<li><input type="checkbox" name="ownedParts" value="オーバーチューン［射撃］LV2" checked> オーバーチューン［射撃］LV2</li>
-<li><input type="checkbox" name="ownedParts" value="オーバーチューン［格闘］LV1" checked> オーバーチューン［格闘］LV1</li>
-<li><input type="checkbox" name="ownedParts" value="オーバーチューン［格闘］LV2" checked> オーバーチューン［格闘］LV2</li>
-
-
 <!-- その他 -->
 <li><input type="checkbox" name="ownedParts" value="イレギュラーDBLLV1" checked> イレギュラーDBLLV1</li>
 <li><input type="checkbox" name="ownedParts" value="特殊燃焼剤LV1" checked> 特殊燃焼剤LV1</li>
-<li><input type="checkbox" name="ownedParts" value="火器管制最適化システムLV1" checked> 火器管制最適化システムLV1</li>
 　　</fieldset>
      
 　　<fieldset>
@@ -223,7 +215,6 @@ fieldset {
 <!-- 強制冷却システム系 -->
 <li><input type="checkbox" name="ownedParts" value="強制冷却システム LV1" checked> 強制冷却システム LV1</li>
 <li><input type="checkbox" name="ownedParts" value="強制冷却システム LV2" checked> 強制冷却システム LV2</li>
-<li><input type="checkbox" name="ownedParts" value="強制冷却システム LV3" checked> 強制冷却システム LV3</li>
 
 <!-- クイックローダー系 -->
 <li><input type="checkbox" name="ownedParts" value="クイックローダー LV1" checked> クイックローダー LV1</li>
@@ -250,7 +241,6 @@ fieldset {
 
 <!-- AD-ASL系 -->
 <li><input type="checkbox" name="ownedParts" value="AD-ASL LV1" checked> AD-ASL LV1</li>
-<li><input type="checkbox" name="ownedParts" value="AD-ASL LV2" checked> AD-ASL LV2</li>
 
 <!-- その他 -->
 <li><input type="checkbox" name="ownedParts" value="電子防護システム LV1" checked> 電子防護システム LV1</li>
@@ -368,17 +358,9 @@ const effectCalculators = {
 {name: "格闘強化プログラムLV3", close: 4, mid: 0, far: 0, type: "attack"},
 {name: "格闘強化プログラムLV4", close: 4, mid: 1, far: 0, type: "attack"},
 
-// オーバーチューン系
-{name: "オーバーチューン［射撃］LV1", close: 3, mid: 4, far: 5, type: "attack"},
-{name: "オーバーチューン［射撃］LV2", close: 4, mid: 5, far: 3, type: "attack"},
-{name: "オーバーチューン［格闘］LV1", close: 5, mid: 3, far: 1, type: "attack"},
-{name: "オーバーチューン［格闘］LV2", close: 2, mid: 4, far: 3, type: "attack"},
-
-
 // その他
 {name: "イレギュラーDBLLV1", close: 0, mid: 1, far: 2, type: "attack"},
 {name: "特殊燃焼剤LV1", close: 0, mid: 2, far: 2, type: "attack"},
-{name: "火器管制最適化システムLV1", close: 3, mid: 1, far: 5, type: "attack"},
 // 補助系カスタムパーツの定義
 {name: "冷却システム LV1", close: 3, mid: 1, far: 0, type: "support"},
 {name: "冷却システム LV2", close: 6, mid: 2, far: 0, type: "support"},
@@ -386,7 +368,6 @@ const effectCalculators = {
 
 {name: "強制冷却システム LV1", close: 2, mid: 1, far: 0, type: "support"},
 {name: "強制冷却システム LV2", close: 5, mid: 3, far: 0, type: "support"},
-{name: "強制冷却システム LV3", close: 7, mid: 4, far: 1, type: "support"},
 
 {name: "クイックローダー LV1", close: 0, mid: 0, far: 2, type: "support"},
 {name: "クイックローダー LV2", close: 1, mid: 4, far: 0, type: "support"},
@@ -407,7 +388,6 @@ const effectCalculators = {
 {name: "フィールドモーター LV2", close: 0, mid: 3, far: 7, type: "support"},
 
 {name: "AD-ASL LV1", close: 0, mid: 1, far: 4, type: "support"},
-{name: "AD-ASL LV2", close: 0, mid: 5, far: 7, type: "support"},
 
 {name: "電子防護システム LV1", close: 2, mid: 0, far: 0, type: "support"},
 
