@@ -567,9 +567,9 @@ currentParts.forEach(part => {
     
     // 耐久指数を計算する関数
     function calculateDurability(hp, bulletDef, beamDef, meleeDef, bulletLimit, beamLimit, meleeLimit) {
-      const ratioBullet = parseFloat(document.getElementById("attackBullet").value) / 100;
-      const ratioBeam   = parseFloat(document.getElementById("attackBeam").value) / 100;
-      const ratioMelee  = parseFloat(document.getElementById("attackMelee").value) / 100;
+      const ratioBullet = parseFloat(document.getElementById("attackBullet").value) ;
+      const ratioBeam   = parseFloat(document.getElementById("attackBeam").value) ;
+      const ratioMelee  = parseFloat(document.getElementById("attackMelee").value) ;
       const totalAttack = ratioBullet + ratioBeam + ratioMelee;
       const wari = 1 / totalAttack;
       
