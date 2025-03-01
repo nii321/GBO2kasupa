@@ -123,7 +123,8 @@ fieldset {
     <option value="beamDef">耐ビーム補正拡張Lv5</option>
     <option value="meleeDef">耐格闘補正拡張Lv5</option>
     <option value="hpBoost">カスタムパーツ拡張［HP］Lv5</option>
-    <option value="armorBoost">カスタムパーツ拡張［装甲］Lv5</option>
+    <option value="armorBoost4">カスタムパーツ拡張［装甲］Lv4</option>
+    <option value="armorBoost5">カスタムパーツ拡張［装甲］Lv5</option>
   </select>
 </fieldset>
    
@@ -191,13 +192,11 @@ fieldset {
 　<li><input type="checkbox" name="ownedParts" value="射撃強化プログラムLV1" checked> 射撃強化プログラムLV1</li>
 <li><input type="checkbox" name="ownedParts" value="射撃強化プログラムLV2" checked> 射撃強化プログラムLV2</li>
 <li><input type="checkbox" name="ownedParts" value="射撃強化プログラムLV3" checked> 射撃強化プログラムLV3</li>
-<li><input type="checkbox" name="ownedParts" value="射撃強化プログラムLV4" checked> 射撃強化プログラムLV4</li>
 
 <!-- 格闘強化プログラム系 -->
 <li><input type="checkbox" name="ownedParts" value="格闘強化プログラムLV1" checked> 格闘強化プログラムLV1</li>
 <li><input type="checkbox" name="ownedParts" value="格闘強化プログラムLV2" checked> 格闘強化プログラムLV2</li>
 <li><input type="checkbox" name="ownedParts" value="格闘強化プログラムLV3" checked> 格闘強化プログラムLV3</li>
-<li><input type="checkbox" name="ownedParts" value="格闘強化プログラムLV4" checked> 格闘強化プログラムLV4</li>
 
 <!-- その他 -->
 <li><input type="checkbox" name="ownedParts" value="イレギュラーDBLLV1" checked> イレギュラーDBLLV1</li>
@@ -210,7 +209,6 @@ fieldset {
 <!-- 冷却システム系 -->
 <li><input type="checkbox" name="ownedParts" value="冷却システム LV1" checked> 冷却システム LV1</li>
 <li><input type="checkbox" name="ownedParts" value="冷却システム LV2" checked> 冷却システム LV2</li>
-<li><input type="checkbox" name="ownedParts" value="冷却システム LV3" checked> 冷却システム LV3</li>
 
 <!-- 強制冷却システム系 -->
 <li><input type="checkbox" name="ownedParts" value="強制冷却システム LV1" checked> 強制冷却システム LV1</li>
@@ -237,7 +235,6 @@ fieldset {
 
 <!-- フィールドモーター系 -->
 <li><input type="checkbox" name="ownedParts" value="フィールドモーター LV1" checked> フィールドモーター LV1</li>
-<li><input type="checkbox" name="ownedParts" value="フィールドモーター LV2" checked> フィールドモーター LV2</li>
 
 <!-- AD-ASL系 -->
 <li><input type="checkbox" name="ownedParts" value="AD-ASL LV1" checked> AD-ASL LV1</li>
@@ -350,13 +347,11 @@ const effectCalculators = {
 {name: "射撃強化プログラムLV1", close: 0, mid: 0, far: 1, type: "attack"},
 {name: "射撃強化プログラムLV2", close: 0, mid: 0, far: 3, type: "attack"},
 {name: "射撃強化プログラムLV3", close: 0, mid: 0, far: 4, type: "attack"},
-{name: "射撃強化プログラムLV4", close: 0, mid: 2, far: 5, type: "attack"},
 
 // 格闘強化プログラム系
 {name: "格闘強化プログラムLV1", close: 1, mid: 0, far: 0, type: "attack"},
 {name: "格闘強化プログラムLV2", close: 3, mid: 0, far: 0, type: "attack"},
 {name: "格闘強化プログラムLV3", close: 4, mid: 0, far: 0, type: "attack"},
-{name: "格闘強化プログラムLV4", close: 4, mid: 1, far: 0, type: "attack"},
 
 // その他
 {name: "イレギュラーDBLLV1", close: 0, mid: 1, far: 2, type: "attack"},
@@ -364,7 +359,6 @@ const effectCalculators = {
 // 補助系カスタムパーツの定義
 {name: "冷却システム LV1", close: 3, mid: 1, far: 0, type: "support"},
 {name: "冷却システム LV2", close: 6, mid: 2, far: 0, type: "support"},
-{name: "冷却システム LV3", close: 7, mid: 4, far: 0, type: "support"},
 
 {name: "強制冷却システム LV1", close: 2, mid: 1, far: 0, type: "support"},
 {name: "強制冷却システム LV2", close: 5, mid: 3, far: 0, type: "support"},
@@ -385,7 +379,6 @@ const effectCalculators = {
 {name: "AD-DCS LV2", close: 1, mid: 2, far: 0, type: "support"},
 
 {name: "フィールドモーター LV1", close: 0, mid: 1, far: 4, type: "support"},
-{name: "フィールドモーター LV2", close: 0, mid: 3, far: 7, type: "support"},
 
 {name: "AD-ASL LV1", close: 0, mid: 1, far: 4, type: "support"},
 
@@ -420,20 +413,19 @@ const effectCalculators = {
     far: parseInt(document.getElementById('slotFar').value, 10)
   };
 
-  // 拡張スキルに応じて候補パーツを絞り込む
-  let candidateParts = getCandidateParts();
+// 拡張スキルに応じて候補パーツを絞り込む
+let candidateParts = getCandidateParts();
 
-   if (extensionSkill !== 'hpBoost' && extensionSkill !== 'armorBoost') {
-    // 拡張スキルが選ばれていない場合、攻撃系と補助系を除外
-    candidateParts = candidateParts.filter(part => !part.type || (part.type !== 'attack' && part.type !== 'support'));
-  } else if (extensionSkill === 'hpBoost') {
-    // HP拡張の場合、攻撃系のみ含める
-    candidateParts = candidateParts.filter(part => !part.type || part.type === 'attack');
-  } else if (extensionSkill === 'armorBoost') {
-    // 装甲拡張の場合、補助系のみ含める
-    candidateParts = candidateParts.filter(part => !part.type || part.type === 'support');
-  }
-   
+if (extensionSkill !== 'hpBoost' && !extensionSkill.startsWith('armorBoost')) {
+  // 拡張スキルが選ばれていない場合、攻撃系と補助系を除外
+  candidateParts = candidateParts.filter(part => !part.type || (part.type !== 'attack' && part.type !== 'support'));
+} else if (extensionSkill === 'hpBoost') {
+  // HP拡張の場合、補助系を除外
+  candidateParts = candidateParts.filter(part => !part.type || part.type === 'attack');
+} else if (extensionSkill.startsWith('armorBoost')) {
+  // 装甲拡張の場合、攻撃系を除外
+  candidateParts = candidateParts.filter(part => !part.type || part.type === 'support');
+}
       
       bestCombination = null;
       maxDurability = 0;
@@ -493,13 +485,19 @@ currentParts.forEach(part => {
         // 攻撃タイプのパーツ数をカウント
         extraHP = currentParts.filter(p => p.type === 'attack').length * 400;
         break;
-      case 'armorBoost':
+      case 'armorBoost5':
         // 補助タイプのパーツ数をカウント
-        const supportCount = currentParts.filter(p => p.type === 'support').length;
-        extraBulletDef = supportCount * 3;
-        extraBeamDef = supportCount * 3;
-        extraMeleeDef = supportCount * 3;
+        const supportCount5 = currentParts.filter(p => p.type === 'support').length;
+        extraBulletDef = supportCount5 * 3;
+        extraBeamDef = supportCount5 * 3;
+        extraMeleeDef = supportCount5 * 3;
         break;
+      case 'armorBoost4':
+   const supportCount4 = currentParts.filter(p => p.type === 'support').length;
+   extraBulletDef = supportCount4 * 2;
+   extraBeamDef = supportCount4 * 2;
+   extraMeleeDef = supportCount4 * 2;
+   break;
     }
 
     // 最終的な値を計算
