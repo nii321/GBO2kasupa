@@ -68,6 +68,15 @@ fieldset {
       <label>耐格闘補正　:
         <input type="number" id="defMelee">
       </label>
+      <label>実弾ダメージ軽減率(%):
+        <input type="number" id="baseBulletReduction" value="0" min="0" max="100">
+      </label>
+      <label>ビームダメージ軽減率(%):
+        <input type="number" id="baseBeamReduction" value="0" min="0" max="100">
+      </label>
+      <label>格闘ダメージ軽減率(%):
+        <input type="number" id="baseMeleeReduction" value="0" min="0" max="100">
+
     </fieldset>
   
     <fieldset>
@@ -305,7 +314,7 @@ const effectCalculators = {
       {name: "新型フレーム LV1", close:0, mid:5, far:0, hp:800, bullet:0, beam:0, melee:0},
       {name: "新型フレーム LV2", close:5, mid:2, far:0, hp:1000, bullet:0, beam:0, melee:0},
       {name: "新型フレーム LV3", close:1, mid:2, far:5, hp:1200, bullet:0, beam:0, melee:0},
-      {name: "新型フレーム LV4", close:2, mid:4, far:6, hp:2000, bullet:0, beam:0, melee:0},
+      {name: "新型フレーム LV4", close:2, mid:4, far:6, hp:2400, bullet:0, beam:0, melee:0},
     
       // 耐実弾装甲系
       {name: "耐実弾装甲 LV1", close:0, mid:1, far:1, hp:0, bullet:3, beam:0, melee:0},
@@ -410,6 +419,9 @@ const effectCalculators = {
   const baseBullet = parseInt(document.getElementById('defBullet').value, 10);
   const baseBeam = parseInt(document.getElementById('defBeam').value, 10);
   const baseMelee = parseInt(document.getElementById('defMelee').value, 10);
+  const baseBulletReduction = parseFloat(document.getElementById('baseBulletReduction').value) / 100 || 0;
+  const baseBeamReduction = parseFloat(document.getElementById('baseBeamReduction').value) / 100 || 0;
+  const baseMeleeReduction = parseFloat(document.getElementById('baseMeleeReduction').value) / 100 || 0;
   const cpboundary = parseInt(document.getElementById('cpboundary').value, 10);
   const extensionSkill = document.getElementById('extensionSkill').value;
 
@@ -436,25 +448,21 @@ if (extensionSkill !== 'hpBoost' && !extensionSkill.startsWith('armorBoost')) {
       bestCombination = null;
       maxDurability = 0;
       
-      // 初期値：絶対HPには基礎HPを、hp割合ボーナスは0から開始する
-   backtrack(candidateParts, [], 0, slots.close, slots.mid, slots.far,
-            baseHP, baseBullet, baseBeam, baseMelee, 0,
-            0, 0, 0, 
-            machineLevel, cpboundary);
-      
+      // 初期値
+  backtrack(candidateParts, [], 0, slots.close, slots.mid, slots.far,
+            baseHP, baseBullet, baseBeam, baseMelee, 0, 
+            baseBulletReduction, baseBeamReduction, baseMeleeReduction, 
+            machineLevel, cpboundary);      
       showResult();
     }
     
     /*
       バックトラック探索関数
-      ※ 新たに currentHPPercent パラメータを追加し、
-         選択したパーツの hpPercent を累積。
-         終点では effectiveHP = currentAbsHP * (1 + currentHPPercent/100) として耐久指数を計算。
     */
 function backtrack(candidateParts, currentParts, index, remainingClose, remainingMid, remainingFar,
                    currentAbsHP, currentBulletDef, currentBeamDef, currentMeleeDef, currentHPPercent,
-                   currentBulletReduction, currentBeamReduction, currentMeleeReduction, 
-                   machineLevel, cpboundary) {
+                   currentBulletReduction, currentBeamReduction, currentMeleeReduction,
+                   machineLevel, cpboundary){
   if (currentParts.length === cpboundary || index === candidateParts.length) {
     // 拡張スキルの効果を計算
     const extensionSkill = document.getElementById('extensionSkill').value;
@@ -626,6 +634,9 @@ function calculateDurability(hp, bulletDef, beamDef, meleeDef, bulletLimit, beam
       html += "<p>耐実弾補正　: " + bestCombination.finalStats.bulletDef + " </p>";
       html += "<p>耐ビーム補正: " + bestCombination.finalStats.beamDef + " </p>";
       html += "<p>耐格闘補正　: " + bestCombination.finalStats.meleeDef + " </p>";
+　　　html += "<p>実弾ダメージ軽減率: " + (bestCombination.finalStats.bulletReduction * 100).toFixed(0) + "%</p>";
+ 　　 html += "<p>ビームダメージ軽減率: " + (bestCombination.finalStats.beamReduction * 100).toFixed(0) + "%</p>";
+ 　　 html += "<p>格闘ダメージ軽減率: " + (bestCombination.finalStats.meleeReduction * 100).toFixed(0) + "%</p>";
 　　  html += "<p>拡張スキル: " + selectedSkillName + "</p>";
       html += "<p>耐久指数: " + maxDurability.toFixed(2) + "</p>";
 
@@ -638,6 +649,9 @@ const inputFields = [
   'defBullet',
   'defBeam',
   'defMelee',
+  'baseBulletReduction', 
+  'baseBeamReduction',   
+  'baseMeleeReduction',  
   'slotClose',
   'slotMid',
   'slotFar',
